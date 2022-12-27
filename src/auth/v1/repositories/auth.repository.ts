@@ -3,6 +3,7 @@ import {
   Injectable,
   InternalServerErrorException,
   UnauthorizedException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -15,6 +16,7 @@ import { SignInCredentialsDto } from 'src/auth/dtos/auth-sign-in.dto';
 import * as fs from 'fs';
 import * as path from 'path';
 import { JwtService } from '@nestjs/jwt';
+import { ChangePasswordCredentials } from 'src/auth/dtos/change-password.dto';
 
 @Injectable()
 export class AuthRepository {
@@ -30,8 +32,7 @@ export class AuthRepository {
     try {
       const { username, email, password } = authSignupCredentials;
 
-      const salt = await bcrypt.genSalt();
-      const hashedPassword = await bcrypt.hash(password, salt);
+      const hashedPassword = await this.hashPassword(password);
 
       const user: UserSchemaInterface = await this.model.create({
         username,
@@ -82,16 +83,66 @@ export class AuthRepository {
       expiresIn: +jwt_expiry,
     });
 
+    await this.loginUser(user);
+
+    return {
+      user: { username: user.username, email: user.email },
+      accessToken,
+    };
+  }
+
+  async changePassword(
+    user: UserDocument,
+    changePasswordDetails: ChangePasswordCredentials,
+  ): Promise<string> {
+    const { oldPassword, newPassword } = changePasswordDetails;
+
+    if (!(await bcrypt.compare(oldPassword, user.password))) {
+      throw new UnprocessableEntityException(AUTH_ENUM.INVALID_CREDENTIALS);
+    }
+
+    const hashedPassword = await this.hashPassword(newPassword);
+
+    await this.model.findOneAndUpdate(
+      { _id: user._id },
+      {
+        password: hashedPassword,
+      },
+    );
+
+    await this.invalidateUser(user);
+
+    return AUTH_ENUM.PASSWORD_CHANGED_SUCCESS;
+  }
+
+  async logout(user: UserDocument): Promise<string> {
+    await this.invalidateUser(user);
+
+    return AUTH_ENUM.LOGOUT_SUCCESS;
+  }
+
+  // Private functions begin here
+
+  private async hashPassword(password: string): Promise<string> {
+    const salt = await bcrypt.genSalt();
+    return await bcrypt.hash(password, salt);
+  }
+
+  private async loginUser(user: UserDocument): Promise<void> {
     await this.model.findOneAndUpdate(
       { _id: user._id },
       {
         requiresLogin: false,
       },
     );
+  }
 
-    return {
-      user: { username: user.username, email: user.email },
-      accessToken,
-    };
+  private async invalidateUser(user: UserDocument): Promise<void> {
+    await this.model.findOneAndUpdate(
+      { _id: user._id },
+      {
+        requiresLogin: true,
+      },
+    );
   }
 }
