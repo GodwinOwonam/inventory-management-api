@@ -8,6 +8,11 @@ export enum REGISTRATION_ENUM {
 
 export enum AUTH_ENUM {
   INVALID_CREDENTIALS = 'Invalid authentication credentials!',
+  UNAUTHORIZED = 'Unauthenticated!',
+  PASSWORD_CHANGED_SUCCESS = 'Password changed successfully! Please login to continue!',
+  SAME_AS_OLD_PASSWORD = 'Old and new password cannot be the same!',
+  CHANGE_PASSWORD_MISMATCH = 'New password and confirmation must match!',
+  LOGOUT_SUCCESS = 'Logout successful!',
 }
 
 export enum GENERAL_ERROR {}
