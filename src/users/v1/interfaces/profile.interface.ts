@@ -3,6 +3,10 @@ export interface ProfileSchemaInterface {
 
   fullName?: string;
 
+  businessAddress?: string;
+
+  businessEmail?: string;
+
   photoUrl?: string;
 
   photoFileName?: string;

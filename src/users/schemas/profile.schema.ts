@@ -13,10 +13,16 @@ export class Profile implements ProfileSchemaInterface {
   fullName: string;
 
   @Prop()
-  photoUrl: string;
+  businessAddress?: string;
 
-  @Prop()
-  photoFileName: string;
+  @Prop({ unique: true, type: String })
+  businessEmail?: string;
+
+  @Prop({ default: null })
+  photoUrl: string | null;
+
+  @Prop({ default: null })
+  photoFileName: string | null;
 
   @Prop({ required: true, default: new Date() })
   createdAt: Date;
