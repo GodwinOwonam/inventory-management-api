@@ -42,21 +42,9 @@ export class UsersService {
       throw new UnprocessableEntityException('file must be a png, jpg/jpeg');
     }
 
-    const profile = await this.usersRepository.updateProfilePhoto(
-      user,
-      fileName,
-    );
+    await this.usersRepository.updateProfilePhoto(user, fileName);
 
-    return {
-      success: true,
-      data: {
-        user: {
-          username: user.username,
-          email: user.email,
-        },
-        profile,
-      },
-    };
+    return await this.viewProfile(user);
   }
 
   async viewProfilePhoto(res, user: UserDocument): Promise<IResponse> {
