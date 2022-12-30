@@ -66,7 +66,7 @@ export class UsersRepository {
         {
           photoFileName: fileName ?? profile.photoFileName,
           photoUrl: !profile.photoUrl
-            ? getFromEnv('BASE_URL', process.env.STAGE) + `/profile/photo`
+            ? getFromEnv('BASE_URL') + `/profile/photo`
             : profile.photoUrl,
           updatedAt: new Date(),
         },
