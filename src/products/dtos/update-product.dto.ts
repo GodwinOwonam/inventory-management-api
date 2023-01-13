@@ -1,5 +1,6 @@
 import {
   IsBoolean,
+  IsNumber,
   IsNumberString,
   IsOptional,
   IsPositive,
@@ -21,14 +22,14 @@ export class ProductUploadDto {
   price: number;
 
   @IsOptional()
-  @IsNumberString()
+  @IsNumber()
   @IsPositive()
-  units_available: number;
+  unitsAvailable: number;
 
   @IsOptional()
-  @IsNumberString()
+  @IsNumber()
   @IsPositive()
-  minimum_order_level: number;
+  minimumOrderLevel: number;
 
   @IsOptional()
   @IsBoolean()

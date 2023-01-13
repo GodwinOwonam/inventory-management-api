@@ -4,6 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { PassportModule } from '@nestjs/passport';
 import { AuthModule } from 'src/auth/auth.module';
 import { getFromEnv } from 'src/helpers/env.helper';
+import { ProductLog, ProductLogSchema } from './schemas/product-log.schema';
 import {
   ProductPhoto,
   ProductPhotoSchema,
@@ -29,6 +30,7 @@ import { ProductsService } from './v1/services/products.service';
     MongooseModule.forFeature([
       { name: Product.name, schema: ProductSchema },
       { name: ProductPhoto.name, schema: ProductPhotoSchema },
+      { name: ProductLog.name, schema: ProductLogSchema },
     ]),
     AuthModule,
   ],

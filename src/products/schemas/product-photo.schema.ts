@@ -9,7 +9,7 @@ export class ProductPhoto implements ProductPhotoSchemaInterface {
   @Prop({ unique: true, type: String })
   productId: string;
 
-  @Prop({ unique: true, type: String })
+  @Prop()
   filename: string;
 
   @Prop({ unique: true, type: String })
