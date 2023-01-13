@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   Post,
+  Put,
   Res,
   UploadedFile,
   UseGuards,
@@ -16,6 +17,7 @@ import { GetUser } from 'src/auth/v1/decorators/get-user.decorator';
 import { IResponse } from 'src/interfaces/response.interface';
 import { ProductUploadDto } from 'src/products/dtos/create-product.dto';
 import { SearchAndFilterDto } from 'src/products/dtos/search-and-filter.dto';
+import { ProductUpdateDto } from 'src/products/dtos/update-product.dto';
 import { saveProductImageToStorage } from '../helpers/store-product-image.helper';
 import { ProductsService } from '../services/products.service';
 
@@ -38,6 +40,15 @@ export class ProductsController {
     @Body() uploadDetails: ProductUploadDto,
   ): Promise<IResponse> {
     return await this.productsService.uploadProduct(user, uploadDetails);
+  }
+
+  @Put('/:id')
+  async updateProduct(
+    @GetUser() user: UserDocument,
+    @Param('id') id: string,
+    @Body() updateDetails: ProductUpdateDto,
+  ): Promise<IResponse> {
+    return await this.productsService.updateProduct(user, id, updateDetails);
   }
 
   @Get('/:id')

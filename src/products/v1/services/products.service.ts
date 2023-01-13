@@ -3,6 +3,7 @@ import { UserDocument } from 'src/auth/schemas/user.schema';
 import { IResponse } from 'src/interfaces/response.interface';
 import { ProductUploadDto } from 'src/products/dtos/create-product.dto';
 import { SearchAndFilterDto } from 'src/products/dtos/search-and-filter.dto';
+import { ProductUpdateDto } from 'src/products/dtos/update-product.dto';
 import { PRODUCT_PHOTO_RESPONSE_ENUMS } from '../constants/product-response.enums';
 import { ProductsRepository } from '../repositories/products.repository';
 
@@ -40,6 +41,16 @@ export class ProductsService {
     };
   }
 
+  async updateProduct(
+    user: UserDocument,
+    id: string,
+    updateDetails: ProductUpdateDto,
+  ): Promise<IResponse> {
+    await this.productsRepository.updateProduct(user, id, updateDetails);
+
+    return this.getProduct(user, id);
+  }
+
   async updateProductPhoto(
     id: string,
     file: Express.Multer.File,
@@ -63,7 +74,7 @@ export class ProductsService {
     id: string,
     user: UserDocument,
   ): Promise<IResponse> {
-    const photo = await this.productsRepository.getProduct(user, id);
+    const photo = await this.productsRepository.getProductPhoto(user, id);
 
     return await res.sendFile(photo.filename, {
       root: './src/images/products',

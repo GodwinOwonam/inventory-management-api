@@ -1,13 +1,12 @@
 import {
   IsBoolean,
   IsNumber,
-  IsNumberString,
   IsOptional,
   IsPositive,
   IsString,
 } from 'class-validator';
 
-export class ProductUploadDto {
+export class ProductUpdateDto {
   @IsString()
   @IsOptional()
   name: string;
@@ -17,7 +16,7 @@ export class ProductUploadDto {
   description: string;
 
   @IsOptional()
-  @IsNumberString()
+  @IsNumber()
   @IsPositive()
   price: number;
 

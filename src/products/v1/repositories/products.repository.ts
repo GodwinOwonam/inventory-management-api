@@ -13,6 +13,7 @@ import { UserDocument } from 'src/auth/schemas/user.schema';
 import { getFromEnv } from 'src/helpers/env.helper';
 import { ProductUploadDto } from 'src/products/dtos/create-product.dto';
 import { SearchAndFilterDto } from 'src/products/dtos/search-and-filter.dto';
+import { ProductUpdateDto } from 'src/products/dtos/update-product.dto';
 import {
   ProductLog,
   ProductLogDocument,
@@ -180,6 +181,57 @@ export class ProductsRepository {
     }
   }
 
+  async updateProduct(
+    user: UserDocument,
+    id: string,
+    updateDetails: ProductUpdateDto,
+  ): Promise<SingleProductListing> {
+    try {
+      const product = await this.model
+        .findOne({ userId: user._id, _id: id })
+        .exec();
+
+      if (!product) {
+        throw new UnprocessableEntityException(
+          PRODUCT_RESPONSE_ENUMS.NOT_FOUND,
+        );
+      }
+
+      const updatedProduct = await this.model.findOneAndUpdate(
+        { _id: product._id },
+        {
+          ...updateDetails,
+          updatedAt: new Date(),
+        },
+      );
+      await this.createLog(
+        product,
+        PRODUCT_EVENTS.UPDATE_PRODUCT,
+        user,
+        product.unitsAvailable,
+      );
+
+      return {
+        user: {
+          username: user.username,
+          email: user.email,
+        },
+        product: updatedProduct,
+        photo: {},
+      };
+    } catch (error) {
+      this.logger.warn(
+        `User ${user.username} tried to update product photo with id ${id}`,
+      );
+
+      if (error.code == 11000 && error.keyPattern?.name) {
+        throw new ConflictException(PRODUCT_RESPONSE_ENUMS.NAME_CONFLICT);
+      }
+
+      throw new UnprocessableEntityException(error.message);
+    }
+  }
+
   async updateProductPhoto(
     id: string,
     fileName: string,
@@ -229,7 +281,7 @@ export class ProductsRepository {
     }
   }
 
-  async getProduct(
+  async getProductPhoto(
     user: UserDocument,
     id: string,
   ): Promise<ProductPhotoDocument> {
