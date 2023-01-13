@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { User, UserDocument } from 'src/auth/schemas/user.schema';
+import { UserDocument } from 'src/auth/schemas/user.schema';
 import { GetUser } from 'src/auth/v1/decorators/get-user.decorator';
 import { IResponse } from 'src/interfaces/response.interface';
 import { ProfileUpdateCredentials } from 'src/users/dtos/profile-update.dto';
@@ -41,9 +41,6 @@ export class UsersController {
     @UploadedFile() file: Express.Multer.File,
     @GetUser() user: UserDocument,
   ): Promise<any> {
-    // console.log(file);
-    // console.log(req);
-
     return await this.usersService.updateProfilePhoto(file, user);
   }
 

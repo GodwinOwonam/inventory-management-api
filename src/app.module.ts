@@ -8,8 +8,8 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
-import * as fs from 'fs';
-import * as path from 'path';
+import { ProductsModule } from './products/products.module';
+import { getFromEnv } from './helpers/env.helper';
 
 const databaseUrl =
   process.env.DATABASE_URL ||
@@ -22,12 +22,9 @@ const databaseUrl =
       imports: [],
       inject: [],
       useFactory: () => ({
-        secret: fs.readFileSync(path.join('.env.stage.dev.json')).toJSON().data[
-          'jwt_secret'
-        ],
+        secret: getFromEnv('jwt_secret'),
         signOptions: {
-          expiresIn: fs.readFileSync(path.join('.env.stage.dev.json')).toJSON()
-            .data['jwt_expiry'],
+          expiresIn: getFromEnv('jwt_expiry'),
         },
       }),
     }),
@@ -38,6 +35,7 @@ const databaseUrl =
     TodoitemsModule,
     AuthModule,
     UsersModule,
+    ProductsModule,
   ],
   controllers: [],
   providers: [],

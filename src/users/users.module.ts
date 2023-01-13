@@ -7,8 +7,7 @@ import { Profile, ProfileSchema } from './schemas/profile.schema';
 import { UsersController } from './v1/controllers/users.controller';
 import { UsersRepository } from './v1/repositories/users.repository';
 import { UsersService } from './v1/services/users.service';
-import * as fs from 'fs';
-import * as path from 'path';
+import { getFromEnv } from 'src/helpers/env.helper';
 
 @Module({
   imports: [
@@ -17,13 +16,9 @@ import * as path from 'path';
       imports: [],
       inject: [],
       useFactory: () => ({
-        secret: JSON.parse(
-          fs.readFileSync(path.join('.env.stage.dev.json')).toString(),
-        ).jwt_secret,
+        secret: getFromEnv('jwt_secret'),
         signOptions: {
-          expiresIn: JSON.parse(
-            fs.readFileSync(path.join('.env.stage.dev.json')).toString(),
-          ).jwt_expiry,
+          expiresIn: getFromEnv('jwt_expiry'),
         },
       }),
     }),
